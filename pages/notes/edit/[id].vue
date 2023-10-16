@@ -1,15 +1,16 @@
 <script setup lang="ts">
-const route = useRoute()
+import { useRoute, useState } from 'nuxt/app';
+
+const route = useRoute();
+
+const notes = useState('notes');
+const note = notes.value.find((note) => note.id === route.params.id);
 </script>
 
 <template>
   <div class="note-details">
-    <div class="note-details__content">
-      {{ route.params.id }}
-    </div>
+    <textarea v-model="note.content"> </textarea>
   </div>
 </template>
 
-<style scoped>
-
-</style>
+<style scoped></style>

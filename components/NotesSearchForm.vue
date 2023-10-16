@@ -1,12 +1,12 @@
 <template>
-  <form class="search-form" @submit.prevent="search">
-    <input class="search-form__input" v-model="query" type="text" placeholder="search" />
-    <button class="search-form__button" type="submit">search</button>
+  <form class="notes-search-form" @submit.prevent="search">
+    <input v-model="query" class="notes-search-form__input" type="text" placeholder="search" />
+    <button class="notes-search-form__button" type="submit">search</button>
   </form>
 </template>
 
 <script setup lang="ts">
-import {Ref} from "vue";
+import { ref, Ref } from 'vue';
 
 const query: Ref<string> = ref('');
 const emit = defineEmits(['submit']);
@@ -17,11 +17,11 @@ const search = () => {
   }
 
   emit('submit', query.value);
-}
+};
 </script>
 
 <style lang="scss">
-.search-form {
+.notes-search-form {
   position: relative;
 }
 </style>
