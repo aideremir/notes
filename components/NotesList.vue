@@ -1,8 +1,8 @@
 <template>
   <ul class="notes-list">
     <li v-for="note of props.notes" :key="note.id" class="notes-list__item">
-      <NuxtLink :to="`/notes/${note.id}`">
-        {{ note.title }}
+      <NuxtLink :to="`/${note.id}`">
+        <NotesListItem :note="note" />
       </NuxtLink>
     </li>
   </ul>
@@ -11,6 +11,7 @@
 <script setup lang="ts">
 import { PropType } from 'vue';
 import { INote } from '~/types';
+import NotesListItem from '~/components/NotesListItem.vue';
 
 const props = defineProps({
   notes: {

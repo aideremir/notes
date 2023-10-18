@@ -1,10 +1,14 @@
 <template>
   <div class="notes-app">
-    <NotesSidebar :notes="notes" />
+    <NotesSidebar :notes="notesState.notes" :can-delete="!!currentNote" @delete="deleteHandler" @add="addHandler" />
     <div class="note-details">
-      <div class="note-details__head">
-        <button @click="editModeHandler">edit</button>
-        <NotesSearchForm @submit="searchHandler" />
+      <div v-if="currentNote" class="note-details__head">
+        <NotesDetailsTop
+          :title="currentNoteDateFormatted"
+          :is-edit="notesState.isEdit"
+          @search="searchHandler"
+          @toggle-edit="toggleEditHandler"
+        />
       </div>
       <div class="note-details__content">
         <NuxtPage />
@@ -14,37 +18,61 @@
 </template>
 
 <script setup lang="ts">
-import { useRoute, useRouter, useState } from 'nuxt/app';
-import { INote } from '~/types';
+import { useRouter } from 'nuxt/app';
+import { computed, onMounted, Ref } from 'vue';
+import { useNotesStorage } from '~/composables/useNotesStorage';
+import { generateUniqueId, formatDate } from '~/utils';
 
-const route = useRoute();
+import NotesDetailsTop from '~/components/NotesDetailsTop.vue';
+import NotesSidebar from '~/components/NotesSidebar.vue';
+
 const router = useRouter();
-const notes = useState<INote[]>('notes', () => [
-  {
-    id: '1',
-    title: 'Note 1',
-    content: 'Content 1',
-    createdAt: new Date(),
-  },
-  {
-    id: '2',
-    title: 'Note 2',
-    content: 'Content 2',
-    createdAt: new Date(),
-  },
-  {
-    id: '3',
-    title: 'Note 3',
-    content: 'Content 3',
-    createdAt: new Date(),
-  },
-]);
+const { fetchNotes, addNote, deleteNote, notesState, currentNote } = useNotesStorage();
+
+const currentNoteDateFormatted: Ref<string> = computed(() =>
+  currentNote.value ? formatDate(currentNote.value.createdAt) : '',
+);
 
 const searchHandler = (query: string) => {
+  // eslint-disable-next-line no-console
   console.log('search', query);
 };
 
-const editModeHandler = () => {
-  router.push(`/notes/edit/${route.params.id}`);
+const toggleEditHandler = () => {
+  if (!currentNote) {
+    return;
+  }
+
+  notesState.value.isEdit = !notesState.value.isEdit;
+
+  if (notesState.value.isEdit) {
+    router.push(`/edit/${currentNote.value?.id}`);
+  } else {
+    router.push(`/${currentNote.value?.id}`);
+  }
 };
+
+const deleteHandler = async () => {
+  if (!currentNote) {
+    return;
+  }
+
+  await deleteNote(currentNote.value?.id as string);
+  router.push('/');
+};
+
+const addHandler = async () => {
+  const addedNoteId = await addNote({
+    id: generateUniqueId(),
+    title: '',
+    content: '',
+    createdAt: new Date(),
+  });
+
+  router.push(`/edit/${addedNoteId}`);
+};
+
+onMounted(async () => {
+  await fetchNotes();
+});
 </script>
