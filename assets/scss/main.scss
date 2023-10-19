@@ -23,3 +23,9 @@ body, html {
   border: 1px solid $border-color;
   padding: $gap-small;
 }
+
+.notes-icon-button {
+  border: none;
+  background: none;
+  cursor: pointer;
+}

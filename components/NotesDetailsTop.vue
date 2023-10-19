@@ -3,8 +3,12 @@
     <div class="notes-details-top__menu">
       <input class="notes-input notes-details-top__search" type="search" placeholder="Search" @input="searchHandler" />
       <div v-if="currentNote">
-        <button v-if="props.isEdit" @click="toggleEditHandler">M↓</button>
-        <button v-else @click="toggleEditHandler">edit</button>
+        <button v-if="props.isEdit" class="notes-icon-button" @click="toggleEditHandler">
+          <Icon name="material-symbols:markdown" size="22" color="#929292" />
+        </button>
+        <button v-else class="notes-icon-button" @click="toggleEditHandler">
+          <Icon name="material-symbols:edit-square-outline" size="22" color="#929292" />
+        </button>
       </div>
     </div>
     <div class="notes-details-top__title">

@@ -1,7 +1,11 @@
 <template>
   <div class="notes-menu">
-    <button @click="addHandler">+</button>
-    <button :disabled="!props.canDelete" @click="deleteHandler">x</button>
+    <button class="notes-icon-button" @click="addHandler">
+      <Icon name="material-symbols:add" size="22" color="#929292" />
+    </button>
+    <button class="notes-icon-button" :disabled="!props.canDelete" @click="deleteHandler">
+      <Icon name="material-symbols:delete" size="22" color="#929292" />
+    </button>
   </div>
 </template>
 

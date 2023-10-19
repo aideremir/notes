@@ -110,7 +110,6 @@ export const useNotesStorage = () => {
     return new Promise((resolve, reject) => {
       const transaction = db.transaction(DB_STORE_NAME, 'readwrite');
       const store = transaction.objectStore(DB_STORE_NAME);
-      console.log('Update', data);
       const request = store.put(data);
 
       request.onsuccess = () => {
