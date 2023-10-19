@@ -4,7 +4,7 @@
       <button v-if="props.isEdit" @click="toggleEditHandler">M↓</button>
       <button v-else @click="toggleEditHandler">edit</button>
 
-      <NotesSearchForm @submit="searchHandler" />
+      <input class="notes-details-top__search" type="search" placeholder="search" @input="searchHandler" />
     </div>
     <div class="notes-details-top__title">
       {{ props.title }}
@@ -14,7 +14,6 @@
 
 <script setup lang="ts">
 import { defineEmits } from 'vue';
-import NotesSearchForm from '~/components/NotesSearchForm.vue';
 
 const emit = defineEmits(['search', 'toggle-edit']);
 
@@ -29,8 +28,8 @@ const props = defineProps({
   },
 });
 
-const searchHandler = (query: string) => {
-  emit('search', { query });
+const searchHandler = (event: Event) => {
+  emit('search', (event.target as HTMLInputElement).value);
 };
 
 const toggleEditHandler = () => {

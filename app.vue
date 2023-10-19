@@ -1,8 +1,8 @@
 <template>
   <div class="notes-app">
-    <NotesSidebar :notes="notesState.notes" :can-delete="!!currentNote" @delete="deleteHandler" @add="addHandler" />
+    <NotesSidebar :notes="filteredNotes" :can-delete="!!currentNote" @delete="deleteHandler" @add="addHandler" />
     <div class="note-details">
-      <div v-if="currentNote" class="note-details__head">
+      <div class="note-details__head">
         <NotesDetailsTop
           :title="currentNoteDateFormatted"
           :is-edit="notesState.isEdit"
@@ -19,7 +19,7 @@
 
 <script setup lang="ts">
 import { useRouter } from 'nuxt/app';
-import { computed, onMounted, Ref } from 'vue';
+import { computed, onMounted, ref, Ref } from 'vue';
 import { useNotesStorage } from '~/composables/useNotesStorage';
 import { generateUniqueId, formatDate } from '~/utils';
 
@@ -29,13 +29,22 @@ import NotesSidebar from '~/components/NotesSidebar.vue';
 const router = useRouter();
 const { fetchNotes, addNote, deleteNote, notesState, currentNote } = useNotesStorage();
 
+const searchQuery = ref('');
+
 const currentNoteDateFormatted: Ref<string> = computed(() =>
   currentNote.value ? formatDate(currentNote.value.createdAt) : '',
 );
 
+const filteredNotes = computed(() =>
+  notesState.value.notes.length > 0
+    ? notesState.value.notes.filter(
+        ({ title, content }) => title.includes(searchQuery.value) || content.includes(searchQuery.value),
+      )
+    : [],
+);
+
 const searchHandler = (query: string) => {
-  // eslint-disable-next-line no-console
-  console.log('search', query);
+  searchQuery.value = query;
 };
 
 const toggleEditHandler = () => {
@@ -53,7 +62,7 @@ const toggleEditHandler = () => {
 };
 
 const deleteHandler = async () => {
-  if (!currentNote) {
+  if (!currentNote || !confirm('Really?')) {
     return;
   }
 

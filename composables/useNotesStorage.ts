@@ -1,22 +1,10 @@
 import { useState } from 'nuxt/app';
-import { computed } from 'vue';
+import { computed, watch } from 'vue';
 import { IState, INote } from '~/types';
 
 const DB_NAME = 'NotesDatabase';
 const DB_STORE_NAME = 'NotesStore';
 const DB_VERSION = 1;
-
-interface IEventTarget extends EventTarget {
-  result?: IDBDatabase;
-}
-
-interface IEvent extends Event {
-  target: IEventTarget | null;
-}
-
-interface IIDBVersionChangeEvent extends IDBVersionChangeEvent {
-  target: IEventTarget | null;
-}
 
 export const useNotesStorage = () => {
   const notesState = useState<IState>('notes-state', () => ({
@@ -30,6 +18,20 @@ export const useNotesStorage = () => {
 
   const currentNote = computed(() => notesState.value.notes.find((note: INote) => note.id === route.params.id));
 
+  watch(
+    () => ({ ...currentNote.value }) as INote,
+    async (newVal, oldVal) => {
+      if (!oldVal.id) {
+        return;
+      }
+
+      await updateNote({ ...newVal, createdAt: new Date() });
+    },
+    {
+      deep: true,
+    },
+  );
+
   const getDb = (): Promise<IDBDatabase> => {
     return new Promise((resolve, reject) => {
       if (DB) {
@@ -42,8 +44,8 @@ export const useNotesStorage = () => {
         reject(e);
       };
 
-      request.onsuccess = (e: IEvent) => {
-        DB = e.target?.result;
+      request.onsuccess = (e: Event) => {
+        DB = (e.target as IDBRequest)?.result;
 
         if (DB) {
           resolve(DB);
@@ -52,8 +54,8 @@ export const useNotesStorage = () => {
         }
       };
 
-      request.onupgradeneeded = (e: IIDBVersionChangeEvent) => {
-        const db = e.target?.result;
+      request.onupgradeneeded = (e: IDBVersionChangeEvent) => {
+        const db = (e.target as IDBRequest)?.result;
 
         if (db) {
           db.createObjectStore(DB_STORE_NAME, { autoIncrement: true, keyPath: 'id' });
@@ -102,13 +104,13 @@ export const useNotesStorage = () => {
     });
   };
 
-  const updateNote = async (id: string, data: INote) => {
+  const updateNote = async (data: INote) => {
     const db = await getDb();
 
     return new Promise((resolve, reject) => {
       const transaction = db.transaction(DB_STORE_NAME, 'readwrite');
       const store = transaction.objectStore(DB_STORE_NAME);
-      const request = store.put(data, id);
+      const request = store.put(data);
 
       request.onsuccess = () => {
         resolve(request.result);

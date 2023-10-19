@@ -1,7 +1,8 @@
 <script setup lang="ts">
 import { useNotesStorage } from '~/composables/useNotesStorage';
 
-const { currentNote } = useNotesStorage();
+const { currentNote, notesState } = useNotesStorage();
+notesState.value.isEdit = false;
 </script>
 
 <template>
