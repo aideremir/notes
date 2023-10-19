@@ -1,8 +1,10 @@
 <template>
   <div class="notes-app">
-    <NotesSidebar :notes="filteredNotes" :can-delete="!!currentNote" @delete="deleteHandler" @add="addHandler" />
-    <div class="note-details">
-      <div class="note-details__head">
+    <div class="notes-app__sidebar">
+      <NotesSidebar :notes="filteredNotes" :can-delete="!!currentNote" @delete="deleteHandler" @add="addHandler" />
+    </div>
+    <div class="notes-app__main">
+      <div class="notes-app__main-head">
         <NotesDetailsTop
           :title="currentNoteDateFormatted"
           :is-edit="notesState.isEdit"
@@ -10,7 +12,7 @@
           @toggle-edit="toggleEditHandler"
         />
       </div>
-      <div class="note-details__content">
+      <div class="notes-app__main-content">
         <NuxtPage />
       </div>
     </div>
@@ -73,7 +75,7 @@ const deleteHandler = async () => {
 const addHandler = async () => {
   const addedNoteId = await addNote({
     id: generateUniqueId(),
-    title: '',
+    title: 'New note',
     content: '',
     createdAt: new Date(),
   });
@@ -85,3 +87,31 @@ onMounted(async () => {
   await fetchNotes();
 });
 </script>
+
+<style lang="scss">
+.notes-app {
+  &__sidebar {
+    position: fixed;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    width: $sidebar-width;
+    border-right: 1px solid $border-color;
+  }
+
+  &__main {
+    margin-left: $sidebar-width;
+    position: absolute;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    width: calc(100% - #{$sidebar-width});
+  }
+
+  &__main-content {
+    padding: $gap;
+    height: 100%;
+    overflow: auto;
+  }
+}
+</style>

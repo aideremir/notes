@@ -1,10 +1,11 @@
 <template>
   <div class="notes-details-top">
     <div class="notes-details-top__menu">
-      <button v-if="props.isEdit" @click="toggleEditHandler">M↓</button>
-      <button v-else @click="toggleEditHandler">edit</button>
-
-      <input class="notes-details-top__search" type="search" placeholder="search" @input="searchHandler" />
+      <input class="notes-input notes-details-top__search" type="search" placeholder="Search" @input="searchHandler" />
+      <div v-if="currentNote">
+        <button v-if="props.isEdit" @click="toggleEditHandler">M↓</button>
+        <button v-else @click="toggleEditHandler">edit</button>
+      </div>
     </div>
     <div class="notes-details-top__title">
       {{ props.title }}
@@ -14,6 +15,9 @@
 
 <script setup lang="ts">
 import { defineEmits } from 'vue';
+import { useNotesStorage } from '~/composables/useNotesStorage';
+
+const { currentNote } = useNotesStorage();
 
 const emit = defineEmits(['search', 'toggle-edit']);
 
@@ -37,4 +41,18 @@ const toggleEditHandler = () => {
 };
 </script>
 
-<style scoped></style>
+<style lang="scss">
+.notes-details-top {
+  &__menu {
+    padding: $gap;
+    display: flex;
+    justify-content: space-between;
+    flex-direction: row-reverse;
+  }
+
+  &__title {
+    color: $text-color-secondary;
+    text-align: center;
+  }
+}
+</style>

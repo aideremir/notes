@@ -39,6 +39,16 @@ const addHandler = () => {
 
 <style lang="scss">
 .notes-sidebar {
-  position: relative;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  &__head {
+    padding: $gap;
+  }
+  &__content {
+    flex-grow: 1;
+    padding: $gap;
+    overflow: auto;
+  }
 }
 </style>

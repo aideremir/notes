@@ -21,7 +21,7 @@ export const useNotesStorage = () => {
   watch(
     () => ({ ...currentNote.value }) as INote,
     async (newVal, oldVal) => {
-      if (!oldVal.id) {
+      if (!newVal.id || !oldVal.id) {
         return;
       }
 
@@ -110,6 +110,7 @@ export const useNotesStorage = () => {
     return new Promise((resolve, reject) => {
       const transaction = db.transaction(DB_STORE_NAME, 'readwrite');
       const store = transaction.objectStore(DB_STORE_NAME);
+      console.log('Update', data);
       const request = store.put(data);
 
       request.onsuccess = () => {
