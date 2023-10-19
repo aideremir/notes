@@ -10,6 +10,7 @@ export const useNotesStorage = () => {
   const notesState = useState<IState>('notes-state', () => ({
     notes: [],
     isEdit: false,
+    isSidebarVisible: true,
   }));
 
   const route = useRoute();

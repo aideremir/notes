@@ -1,6 +1,6 @@
 <template>
   <div class="notes-app">
-    <div class="notes-app__sidebar">
+    <div v-show="notesState.isSidebarVisible || $viewport.isGreaterThan('mobileWide')" class="notes-app__sidebar">
       <NotesSidebar :notes="filteredNotes" :can-delete="!!currentNote" @delete="deleteHandler" @add="addHandler" />
     </div>
     <div class="notes-app__main">
@@ -20,13 +20,15 @@
 </template>
 
 <script setup lang="ts">
-import { useRouter } from 'nuxt/app';
+import { useNuxtApp, useRouter } from 'nuxt/app';
 import { computed, onMounted, ref, Ref } from 'vue';
 import { useNotesStorage } from '~/composables/useNotesStorage';
 import { generateUniqueId, formatDate } from '~/utils';
 
 import NotesDetailsTop from '~/components/NotesDetailsTop.vue';
 import NotesSidebar from '~/components/NotesSidebar.vue';
+
+const { $viewport } = useNuxtApp();
 
 const router = useRouter();
 const { fetchNotes, addNote, deleteNote, notesState, currentNote } = useNotesStorage();
@@ -92,11 +94,17 @@ onMounted(async () => {
 .notes-app {
   &__sidebar {
     position: fixed;
+    z-index: 10;
+    background-color: #fff;
     top: 0;
     bottom: 0;
     left: 0;
     width: $sidebar-width;
     border-right: 1px solid $border-color;
+
+    @media (max-width: 768px) {
+      width: 100%;
+    }
   }
 
   &__main {
@@ -106,6 +114,11 @@ onMounted(async () => {
     display: flex;
     flex-direction: column;
     width: calc(100% - #{$sidebar-width});
+
+    @media (max-width: 768px) {
+      margin-left: 0;
+      width: 100%;
+    }
   }
 
   &__main-content {

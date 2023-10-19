@@ -2,13 +2,18 @@
   <div class="notes-details-top">
     <div class="notes-details-top__menu">
       <input class="notes-input notes-details-top__search" type="search" placeholder="Search" @input="searchHandler" />
-      <div v-if="currentNote">
-        <button v-if="props.isEdit" class="notes-icon-button" @click="toggleEditHandler">
-          <Icon name="material-symbols:markdown" size="22" color="#929292" />
+      <div style="display: flex">
+        <button class="notes-icon-button notes-details-top__mobile" @click="openMenuHandler">
+          <Icon name="material-symbols:menu" size="22" color="#929292" />
         </button>
-        <button v-else class="notes-icon-button" @click="toggleEditHandler">
-          <Icon name="material-symbols:edit-square-outline" size="22" color="#929292" />
-        </button>
+        <template v-if="currentNote">
+          <button v-if="props.isEdit" class="notes-icon-button" @click="toggleEditHandler">
+            <Icon name="material-symbols:markdown" size="22" color="#929292" />
+          </button>
+          <button v-else class="notes-icon-button" @click="toggleEditHandler">
+            <Icon name="material-symbols:edit-square-outline" size="22" color="#929292" />
+          </button>
+        </template>
       </div>
     </div>
     <div class="notes-details-top__title">
@@ -21,7 +26,7 @@
 import { defineEmits } from 'vue';
 import { useNotesStorage } from '~/composables/useNotesStorage';
 
-const { currentNote } = useNotesStorage();
+const { currentNote, notesState } = useNotesStorage();
 
 const emit = defineEmits(['search', 'toggle-edit']);
 
@@ -43,6 +48,10 @@ const searchHandler = (event: Event) => {
 const toggleEditHandler = () => {
   emit('toggle-edit');
 };
+
+const openMenuHandler = () => {
+  notesState.value.isSidebarVisible = true;
+};
 </script>
 
 <style lang="scss">
@@ -57,6 +66,14 @@ const toggleEditHandler = () => {
   &__title {
     color: $text-color-secondary;
     text-align: center;
+  }
+
+  &__mobile {
+    display: none;
+
+    @media (max-width: 768px) {
+      display: block;
+    }
   }
 }
 </style>

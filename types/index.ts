@@ -8,4 +8,5 @@ export interface INote {
 export interface IState {
   notes: INote[];
   isEdit: boolean;
+  isSidebarVisible: boolean;
 }

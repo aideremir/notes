@@ -3,6 +3,7 @@ import { useNotesStorage } from '~/composables/useNotesStorage';
 
 const { currentNote, notesState } = useNotesStorage();
 notesState.value.isEdit = true;
+notesState.value.isSidebarVisible = false;
 </script>
 
 <template>

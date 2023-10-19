@@ -1,15 +1,23 @@
 <template>
   <div class="notes-menu">
-    <button class="notes-icon-button" @click="addHandler">
-      <Icon name="material-symbols:add" size="22" color="#929292" />
-    </button>
-    <button class="notes-icon-button" :disabled="!props.canDelete" @click="deleteHandler">
-      <Icon name="material-symbols:delete" size="22" color="#929292" />
+    <div>
+      <button class="notes-icon-button" @click="addHandler">
+        <Icon name="material-symbols:add" size="22" color="#929292" />
+      </button>
+      <button class="notes-icon-button" :disabled="!props.canDelete" @click="deleteHandler">
+        <Icon name="material-symbols:delete" size="22" color="#929292" />
+      </button>
+    </div>
+    <button class="notes-icon-button notes-menu__close" @click="closeMenuHandler">
+      <Icon name="material-symbols:close" size="22" color="#929292" />
     </button>
   </div>
 </template>
 
 <script setup lang="ts">
+import { useNotesStorage } from '~/composables/useNotesStorage';
+const { notesState } = useNotesStorage();
+
 const emit = defineEmits(['add', 'delete']);
 
 const props = defineProps({
@@ -26,10 +34,23 @@ const deleteHandler = () => {
 const addHandler = () => {
   emit('add');
 };
+
+const closeMenuHandler = () => {
+  notesState.value.isSidebarVisible = false;
+};
 </script>
 
 <style lang="scss">
 .notes-menu {
-  position: relative;
+  display: flex;
+  width: 100%;
+  justify-content: space-between;
+
+  &__close {
+    display: none;
+    @media (max-width: 768px) {
+      display: block;
+    }
+  }
 }
 </style>
